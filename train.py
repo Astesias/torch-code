@@ -25,7 +25,7 @@ def main(rep=None,gpu=False):
     save_path='./pth/'
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-    lr=0.01
+    lr=0.05
     resume_epoch=0
     
     if gpu:
