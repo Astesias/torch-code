@@ -55,7 +55,7 @@ def main(path,gpu=False):
     total=0
     
     write=True
-    writer=SummaryWriter
+    writer=SummaryWriter()
     
     fp=open('err','a+')
     
