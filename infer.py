@@ -6,8 +6,7 @@ import torch.nn as nn
 from model import AlexNet
 from dataloader import dataloader_test,index2types
 from torch.utils.tensorboard import SummaryWriter
-import torchvision.transforms as transforms
-from utils import GetShortCut2,range_percent,path2filename,cv2_imread
+from utils import GetShortCut2,range_percent
 from pysl import args_sys
 
 def seed_everything(seed):
@@ -27,27 +26,29 @@ def main(path,gpu=False):
         model_path=path
     
     if gpu:
-        device = torch.device('cuda')
-    
-    
-    model=torch.nn.DataParallel(AlexNet(num_classes=15), device_ids=[0])
-    model.to(device)
-    
-    from collections import OrderedDict
-    new_state_dict = OrderedDict()
-    state_dict =torch.load(model_path)['model'] #预训练模型路径
-    for k, v in state_dict.items():
-    	# 手动添加“module.”
-        if 'module' not in k:
-            k = 'module.'+k
-        else:
-        # 调换module和features的位置
-            k = k.replace('features.module.', 'module.features.')
-        new_state_dict[k]=v
+        device = torch.device('cuda')   
+        model=torch.nn.DataParallel(AlexNet(num_classes=15), device_ids=[0])
+        model.to(device)
+        criterion=nn.CrossEntropyLoss().to(device)
+        
+        from collections import OrderedDict
+        new_state_dict = OrderedDict()
+        state_dict =torch.load(model_path)['model'] #预训练模型路径
+        for k, v in state_dict.items():
+        	# 手动添加“module.”
+            if 'module' not in k:
+                k = 'module.'+k
+            else:
+            # 调换module和features的位置
+                k = k.replace('features.module.', 'module.features.')
+            new_state_dict[k]=v   
+        model.load_state_dict(new_state_dict)
+    else:
+        model=AlexNet(num_classes=15)    
+        criterion=nn.CrossEntropyLoss()
+        model.load_state_dict(torch.load(model_path)['model'])
 
-    model.load_state_dict(new_state_dict)
-    criterion=nn.CrossEntropyLoss().to(device)
-
+    
     model.eval()
     
     test_loss=0
@@ -65,8 +66,9 @@ def main(path,gpu=False):
         print()
         R=range_percent(len(dataloader_test),'Test')
         for batch_idx,(inputs,targets) in enumerate(dataloader_test):
-            inputs=inputs.to(device)
-            targets=targets.to(device)
+            if gpu:
+                inputs=inputs.to(device)
+                targets=targets.to(device)
             
             outputs=model(inputs)
             loss=criterion(outputs,targets)
@@ -83,10 +85,13 @@ def main(path,gpu=False):
             total+=targets.size(0)
             correct+=predicted.eq(targets).sum().item()
             
-            if int(targets)!=int(predicted):
-              fp.write(f'True {int(targets)} False {int(predicted)}\n')
+            try:
+                if int(targets)!=int(predicted):
+                  fp.write(f'True {index2types(int(targets))} False {index2types(int(predicted))}\n')
+            except:
+                pass
 
-            R.update(batch_idx,new=' Loss: {:.2f}|Acc: {:.2f}%'.format( test_loss/(batch_idx+1),100.*correct/total))
+            R.update(batch_idx+1,new=' Loss: {:.2f}|Acc: {:.2f}%'.format( test_loss/(batch_idx+1),100.*correct/total))
             
         print('\nCorrect {} Error {}'.format(correct,total-correct))
         

@@ -9,6 +9,8 @@ from dataloader import dataloader_train
 from torch.utils.tensorboard import SummaryWriter
 from utils import CreateShortCut2,GetShortCut2,path2filename,range_percent
 from pysl import args_sys
+from infer import main as infers
+
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
 
@@ -97,11 +99,14 @@ def main(rep=None,gpu=False):
             R.update(batch_idx+1,new=' Loss: {:.3f}|Acc: {:.3f}%'.
                      format( train_loss/(batch_idx+1),100.*correct/total) )
         
+        
         scheduler.step()
 
         torch.save(save_info,save_path+'model_epoch_'+str(epoch_idx+resume_epoch))
         CreateShortCut2(save_path+'model_epoch_'+str(epoch_idx+resume_epoch),
                                        save_path+'latest_epoch.lnk')
+        
+        infers(GetShortCut2('./pth/latest_epoch.lnk'),(os.name!='nt'))
         
 if __name__ == '__main__':
     main(args_sys(),(os.name!='nt'))
