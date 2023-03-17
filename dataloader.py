@@ -34,7 +34,7 @@ class Loader(Dataset):
                              transforms.Resize((SIZE,SIZE)),
                              # transforms.CenterCrop(112),
                              transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1, hue=0.1),
-                             transforms.RandomAffine(20),
+                             transforms.RandomAffine(10),
                              transforms.ToTensor(),
                              transforms.Normalize(mean=[0.82452958 ,0.77630531 ,0.67329322],
                                                  std=[0.19371124 ,0.23563428 ,0.32667516],)
