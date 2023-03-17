@@ -54,7 +54,7 @@ else:
     num_workers=2
     
 dataloader_train=DataLoader(Loader('../dataset/train'),batch_size=56,shuffle=True,num_workers=num_workers)
-dataloader_test=DataLoader(Loader('../dataset/test'),batch_size=10,shuffle=False,num_workers=num_workers)
+dataloader_test=DataLoader(Loader('../dataset/test'),batch_size=10,shuffle=False,num_workers=0)
 
 
 def index2types(index):
