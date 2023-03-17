@@ -4,7 +4,7 @@ import os
 import cv2
 import sys
 import numpy as np
-import win32com.client as client
+# import win32com.client as client
 
 class range_percent():
     def __init__(self,total,process_name='Process',obj="█",nonobj='░',ef=True):
@@ -25,15 +25,15 @@ class range_percent():
         sys.stdout.flush()
 
 
-shell = client.Dispatch("WScript.Shell")
-def GetShortCut(shortcut):    
-    return shell.CreateShortCut(shortcut).Targetpath
-def createShortCut(filename, lnkname):
-    shortcut = shell.CreateShortCut(lnkname)    
-    shortcut.TargetPath = filename    
-    shortcut.save()
-def CreateShortCut(filename, lnkname):
-    createShortCut(os.path.abspath(filename), lnkname)
+# shell = client.Dispatch("WScript.Shell")
+# def GetShortCut(shortcut):    
+#     return shell.CreateShortCut(shortcut).Targetpath
+# def createShortCut(filename, lnkname):
+#     shortcut = shell.CreateShortCut(lnkname)    
+#     shortcut.TargetPath = filename    
+#     shortcut.save()
+# def CreateShortCut(filename, lnkname):
+#     createShortCut(os.path.abspath(filename), lnkname)
     
     
     
