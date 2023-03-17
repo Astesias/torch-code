@@ -25,7 +25,7 @@ def main(rep=None,gpu=False):
     save_path='./pth/'
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-    lr=0.05
+    lr=0.01
     resume_epoch=0
     
     if gpu:
@@ -37,7 +37,7 @@ def main(rep=None,gpu=False):
     optimizer=torch.optim.SGD(model1.parameters(),
                               lr=lr,momentum=0.9,
                               weight_decay=5e-4)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)                         
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)                         
                                 
     try:
       if not rep or len(rep)==0:
@@ -50,7 +50,7 @@ def main(rep=None,gpu=False):
       save_info=torch.load(model_path)
       model1.load_state_dict(save_info['model'])
       optimizer.load_state_dict(save_info['optimizer'])
-      scheduler.load_state_dict(save_info['scheduler'])
+      # scheduler.load_state_dict(save_info['scheduler'])
     except:  
       print(traceback.print_exc())
       print('No model for resume')
@@ -58,7 +58,7 @@ def main(rep=None,gpu=False):
     save_info={
     'optimizer':optimizer.state_dict(),
     'model':model1.state_dict(),
-    'scheduler':scheduler.state_dict()
+    # 'scheduler':scheduler.state_dict()
     }
     write=True
     writer=SummaryWriter()
@@ -100,7 +100,7 @@ def main(rep=None,gpu=False):
                      format( train_loss/(batch_idx+1),100.*correct/total) )
         
         
-        scheduler.step()
+        # scheduler.step()
 
         torch.save(save_info,save_path+'model_epoch_'+str(epoch_idx+resume_epoch))
         CreateShortCut2(save_path+'model_epoch_'+str(epoch_idx+resume_epoch),
